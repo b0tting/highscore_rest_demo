@@ -18,7 +18,7 @@ class HighScores:
         conn = sqlite3.connect(self.database_file_name)
         cur = conn.cursor()
         sql = "CREATE TABLE IF NOT EXISTS highscores " \
-              "(id PRIMARY KEY, name TEXT NOT NULL, score INTEGER NOT NULL, game TEXT NOT NULL)"
+              "(id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, score INTEGER NOT NULL, game TEXT NOT NULL)"
         cur.execute(sql)
         conn.commit()
 
@@ -40,7 +40,7 @@ class HighScores:
     def insert_score(self, name, score, game):
         conn = sqlite3.connect(self.database_file_name)
         cur = conn.cursor()
-        sql = "INSERT INTO highscores VALUES (?, ?, ?)"
+        sql = "INSERT INTO highscores (name, score, game) VALUES (?, ?, ?)"
         cur.execute(sql, [name, score, game])
         conn.commit()
 

@@ -29,11 +29,11 @@ python highscore_server.py 127.0.0.1:5000
 ## Usage
 The highscore server takes highscores based on a game name using a REST API approach. Scores are saved in a local file called "highscore.json". The following URLs are available:
 
-| URI | HTTP Verb | Description | 
-| --- | --- | --- | 
-| /highscores | GET | Lists all games known to the highscore server | 
-| /highscores/\<gamename\> | GET | Given a \<gamename\>, retrieve the highscores known for that game. | 
-| /highscores/\<gamename\> | POST | Expects a \<gamename\> and a body containing a dictionary with a name and a score, Only the top 10 scores are retained. Return a ranking if the score is in the top 10 (and a list of scores) or a 0 if your score did not make the top 10. | 
+| URI | HTTP Verb | Description                                                                                                                                                                    | 
+| --- | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| 
+| /highscores | GET | Lists all games known to the highscore server                                                                                                                                  | 
+| /highscores/\<gamename\> | GET | Given a \<gamename\>, retrieve the highscores known for that game.                                                                                                            | 
+| /highscores/\<gamename\> | POST | Expects a \<gamename\> and a body containing a dictionary with a name and a score, Only the top 10 scores are retained. Returns a result with a value "ok" if saving succeeded | 
 
 The body for the POST / save score method should resemble the following structure:
 ```json
@@ -49,4 +49,13 @@ The demo page is a fancy scrolling star field (https://github.com/jakesgordon/ja
 - A Jquery based approach 
 - An ES2017-ES2020 pure javascript variant
 
-You can run this page from your web browser directly but be aware of CORS. 
+You can run this page from your web browser directly but be aware of CORS.
+
+# Demo client
+There is also a python class that can be used to interact with the highscore server. It's called [highscore_client.py](highscore_client.py) and can be used as follows:
+```python
+from highscore_client import HighScore
+highscore_client = HighScore("<game name>", server_url="<server address>")
+highscore_client.add_highscore(<player name>, <player score>)
+highscores = highscore_client.get_highscores()
+```
