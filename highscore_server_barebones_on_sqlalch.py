@@ -6,25 +6,18 @@ from sqlalchemy.orm import Session
 
 app = Flask(__name__, static_url_path="/", static_folder="www")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///scores.db'
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///scores.db"
 db = SQLAlchemy(app)
 CORS(app)
-
-
-def result_to_dict(sql_result):
-    result_dict = []
-    for row in sql_result:
-        result_dict.append(({column.name: str(getattr(row, column.name)) for column in row.__table__.columns}))
-    return result_dict
 
 
 class Highscore(db.Model):
     # If no tablename is specified, the class name will be used as the table name
     # To keep this consistent with the example, I have to force this to "highscores"
-    __tablename__ = 'highscores'
+    __tablename__ = "highscores"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), nullable=False)
-    score = db.Column(db.String(80), nullable=False)
+    score = db.Column(db.Integer(), nullable=False)
     game = db.Column(db.String(120), nullable=False)
 
     # This function is not used ..yet
@@ -49,9 +42,32 @@ def handle_highscores(game):
             error = str(e)
         return jsonify({"result": result, "error": error})
     elif request.method == "GET":
-        scores = Highscore.query.filter_by(game=game).order_by(Highscore.score.desc()).limit(10)
-        scores_dict = {"scores": result_to_dict(scores)}
+        # Here, scores is a list of rows, which have 1 Highscore object each
+        scores = db.session.execute(
+            db.select(Highscore)
+            .filter_by(game=game)
+            .order_by(Highscore.score.desc())
+            .limit(10)
+        ).all()
+
+        result = []
+        for row in scores:
+            for score in row:
+                result.append({"name": score.name, "score": score.score})
+
+        scores_dict = {"game": game, "scores": result}
         return jsonify(scores_dict)
+
+
+@app.route("/highscores")
+def list_highscore_games():
+    # Here, games is a list of tuples, each tuple containing a single string
+    # This is because we are selecting a single column
+    games = db.session.execute(
+        db.select(Highscore.game).distinct(Highscore.game).order_by(Highscore.game)
+    ).all()
+    games_dict = {"games": [game[0] for game in games]}
+    return jsonify(games_dict)
 
 
 @app.route("/")
@@ -66,7 +82,7 @@ def hello_javascript():
 
 
 # Note that we need to push the create_all below the Highscores class
-# definition, otherwise if it's a new database SQLALchemy will not
-# create the highscores table
+# definition because the class is used in the create_all function
+app.app_context().push()
 db.create_all()
 app.run(debug=True, host="127.0.0.1", port=5002)
