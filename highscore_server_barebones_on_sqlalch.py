@@ -19,6 +19,9 @@ def result_to_dict(sql_result):
 
 
 class Highscore(db.Model):
+    # If no tablename is specified, the class name will be used as the table name
+    # To keep this consistent with the example, I have to force this to "highscores"
+    __tablename__ = 'highscores'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(80), nullable=False)
     score = db.Column(db.String(80), nullable=False)
@@ -46,9 +49,10 @@ def handle_highscores(game):
             error = str(e)
         return jsonify({"result": result, "error": error})
     elif request.method == "GET":
-        scores = Highscore.query.filter_by(game=game)
+        scores = Highscore.query.filter_by(game=game).order_by(Highscore.score.desc()).limit(10)
         scores_dict = {"scores": result_to_dict(scores)}
         return jsonify(scores_dict)
+
 
 @app.route("/")
 @app.route("/jquery")
@@ -60,8 +64,9 @@ def hello_jquery():
 def hello_javascript():
     return send_from_directory("www", "highscore_js.html")
 
+
 # Note that we need to push the create_all below the Highscores class
 # definition, otherwise if it's a new database SQLALchemy will not
 # create the highscores table
 db.create_all()
-app.run(debug=True, host="127.0.0.1", port=5001)
+app.run(debug=True, host="127.0.0.1", port=5002)
