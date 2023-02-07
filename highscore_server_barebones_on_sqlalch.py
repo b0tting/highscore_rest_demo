@@ -26,6 +26,16 @@ class Highscore(db.Model):
         with Session(db.engine) as session:
             print(session.query(self.name, func.max(Highscore.score)).first())
 
+    @staticmethod
+    def get_games_list():
+        games = db.session.execute(
+            db.select(Highscore.game).distinct(Highscore.game).order_by(Highscore.game)
+        ).all()
+        # Here, games is a list of tuples, each tuple containing a single string
+        # This is because we are selecting a single column
+        unwrapped_games = [game[0] for game in games]
+        return unwrapped_games
+
 
 @app.route("/highscores/<game>", methods=["GET", "POST"])
 def handle_highscores(game):
@@ -61,13 +71,7 @@ def handle_highscores(game):
 
 @app.route("/highscores")
 def list_highscore_games():
-    # Here, games is a list of tuples, each tuple containing a single string
-    # This is because we are selecting a single column
-    games = db.session.execute(
-        db.select(Highscore.game).distinct(Highscore.game).order_by(Highscore.game)
-    ).all()
-    games_dict = {"games": [game[0] for game in games]}
-    return jsonify(games_dict)
+    return jsonify({"games": Highscore.get_games_list()})
 
 
 @app.route("/")
