@@ -57,11 +57,6 @@
         })
     }
 
-    // We register a new event to run a function whenever the button add_new_score is clicked
-    $("#add_new_score").on("click", function() {
-        add_score()
-    })
-
     // This function sends the name and score to the server
     function add_score() {
         payload = {
@@ -79,6 +74,11 @@
             }
         ).done(function(data){fetch_scores()})
     }
+
+    // We register a new event to run a function whenever the button add_new_score is clicked
+    $("#add_new_score").on("click", function() {
+        add_score()
+    })
 
     fetch_scores()
     // Note that setInterval requires a function reference, not a variable!
