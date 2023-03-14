@@ -72,6 +72,7 @@ def handle_highscores(game):
             error = f"Missing required field ({e})"
         except Exception as e:
             result = "error"
+            # Totaal fout!
             error = str(e)
         return jsonify({"result": result, "error": error})
     elif request.method == "GET":

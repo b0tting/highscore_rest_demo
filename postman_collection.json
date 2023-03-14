@@ -2,20 +2,61 @@
 	"info": {
 		"_postman_id": "30f9579e-032b-44eb-9952-66c2dc90d1b2",
 		"name": "Highscores",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "8720331"
 	},
 	"item": [
 		{
 			"name": "Get all games",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();\r",
+							"pm.test(\"Should return at least one game\", function() {\r",
+							"    pm.expect(response.games.length > 3).to.be.true;\r",
+							"})\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": "{{BASE_SERVER}}/highscores",
+					"host": [
+						"{{BASE_SERVER}}"
+					],
+					"path": [
+						"highscores"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Post lunar lander high score",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"let response = pm.response.json();\r",
+							"pm.test(\"Result on insert should be okay\", function() {\r",
+							"    pm.expect(response.result == \"ok\").to.be.true;\r",
+							"})\r",
+							"pm.test(\"Error should be empty\", function() {\r",
+							"    pm.expect(response.error === \"\").to.be.true;\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -30,15 +71,10 @@
 					"raw": "{\"name\": \"Mark\", \"score\": 99}"
 				},
 				"url": {
-					"raw": "http://127.0.0.1:5000/highscores/lunarlander",
-					"protocol": "http",
+					"raw": "{{BASE_SERVER}}/highscores/lunarlander",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{BASE_SERVER}}"
 					],
-					"port": "5000",
 					"path": [
 						"highscores",
 						"lunarlander"
@@ -64,7 +100,16 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": null
+				"url": {
+					"raw": "{{BASE_SERVER}}/highscores/lunarlander",
+					"host": [
+						"{{BASE_SERVER}}"
+					],
+					"path": [
+						"highscores",
+						"lunarlander"
+					]
+				}
 			},
 			"response": []
 		}
