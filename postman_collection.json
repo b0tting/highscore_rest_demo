@@ -15,7 +15,7 @@
 						"exec": [
 							"let response = pm.response.json();\r",
 							"pm.test(\"Should return at least one game\", function() {\r",
-							"    pm.expect(response.games.length > 3).to.be.true;\r",
+							"    pm.expect(response.games.length > 0).to.be.true;\r",
 							"})\r",
 							""
 						],
@@ -97,6 +97,49 @@
 		},
 		{
 			"name": "Lunar lander scores",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Define the JSON schema that you want to validate\r",
+							"var schema = {\r",
+							"    \"$schema\": \"http://json-schema.org/draft-07/schema\",\r",
+							"    \"$id\": \"http://example.com/root.json\",\r",
+							"    \"type\": \"object\",\r",
+							"    \"title\": \"Highscore schema\",\r",
+							"    \"properties\":{\r",
+							"        \"game\": {\r",
+							"            \"type\":\"string\"\r",
+							"        },\r",
+							"        \"scores\": {\r",
+							"            \"type\": \"array\",\r",
+							"            \"items\": {\r",
+							"                \"type\": \"object\",\r",
+							"                \"required\": [\"name\", \"score\"],\r",
+							"                \"properties\": {\r",
+							"                    \"name\": {\r",
+							"                        \"type\": \"string\"\r",
+							"                    },\r",
+							"                    \"score\": {\r",
+							"                        \"type\": \"number\"\r",
+							"                    },\r",
+							"                }                \r",
+							"            }\r",
+							"        }\r",
+							"    }\r",
+							"};\r",
+							"\r",
+							"//Validate the response body\r",
+							"pm.test('Schema validation', () => {\r",
+							"  pm.response.to.have.jsonSchema (schema);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
